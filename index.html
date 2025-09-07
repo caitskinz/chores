@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Da Chore Wheel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+            body {
+      font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+      background: #78cdf5;
+      color: #fff;
+      text-align: center;
+      padding: 30px;
+      margin: 0;
+    }
+
+    h1 {
+      margin-bottom: 25px;
+      font-size: 2em;
+      color: black;
+    }
+
+    .machine-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+
+    .wheel {
+      width: 140px;
+      height: 150px;
+      overflow: hidden;
+      border: 4px solid #000000;
+      border-radius: 10px;
+      background: #000000;
+      position: relative;
+      margin: 0 auto;
+    }
+
+    .reel {
+      position: absolute;
+      width: 100%;
+      animation-timing-function: ease-out;
+    }
+
+    .item {
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.1em;
+      border-bottom: 1px solid #000000;
+    }
+
+    button {
+      padding: 14px 30px;
+      font-size: 1.1em;
+      background: #24a0ed;
+      color: white;
+      border: solid black 1px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+
+    button:hover {
+      background: #e60ba4;
+      transform: scale(1.1)
+    }
+
+    .results {
+      text-align: center;
+      max-width: 400px;
+      margin: 20px auto;
+      background: #78cdf5;
+      padding: 1px;
+      border-radius: 10px;
+      border: solid 2px black;
+    }
+
+    .results h2 {
+      margin-bottom: 10px;
+      font-size: 1.2em;
+
+      padding-bottom: 5px;
+    }
+
+    .results ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .results li {
+      padding: 6px 0;
+    }
+
+    @media (max-width: 500px) {
+      .wheel {
+        width: 100px;
+        height: 120px;
+      }
+
+      .item {
+        font-size: 1em;
+        height: 40px;
+      }
+
+      button {
+        width: 90%;
+        font-size: 1em;
+      }
+
+      h1 {
+        font-size: 1.5em;
+      }
+
+      .machine-container {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+
+    .main {
+        background-color: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+    }
+</style>
+</head>
+
+<body>
+    <div class="main">
+    <h1>🪣 🧽 Standen Chores 🧽 🪣</h1>
+
+    <div class="machine-container">
+        <div class="wheel" id="nameWheel">
+            <div class="reel" id="nameReel"></div>
+        </div>
+        <div class="wheel" id="choreWheel">
+            <div class="reel" id="choreReel"></div>
+        </div>
+    </div>
+
+    <button onclick="spin()">Spin!</button>
+
+    <div class="results" id="results">
+        <h2>Results</h2>
+        <ul id="resultsList"></ul>
+    </div>
+    </div>
+
+    <!-- 🎉 Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+  const flatmates = ["Hannah", "Grace", "Caitlin"];
+  const chores = ["Kitchen", "Vacuuming", "Bathroom"];
+
+  // 🎨 Background color maps
+  const nameColors = {
+    "Hannah": "#b978fa",    
+    "Grace": "#e60ba4",      
+    "Caitlin": "#8095e4"  
+  };
+
+  const choreColors = {
+    "Kitchen": "#b978fa",   
+    "Vacuuming": "#e60ba4", 
+    "Bathroom": "#8095e4"     
+  };
+
+  const nameReel = document.getElementById("nameReel");
+  const choreReel = document.getElementById("choreReel");
+  const resultsList = document.getElementById("resultsList");
+
+  const ITEM_HEIGHT = 50;
+  const VISIBLE_ITEMS = 3;
+  const TOTAL_ITEMS = 50;
+
+  function populateReel(reel, items, colorMap) {
+    reel.innerHTML = '';
+    for (let i = 0; i < TOTAL_ITEMS; i++) {
+      const item = document.createElement("div");
+      item.className = "item";
+      const value = items[i % items.length];
+      item.textContent = value;
+
+      // Set background color instead of text color
+      if (colorMap[value]) {
+        item.style.backgroundColor = colorMap[value];
+        item.style.color = "#fff";
+      }
+
+      reel.appendChild(item);
+    }
+  }
+
+  function shuffle(array) {
+    const copy = [...array];
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+  }
+
+  function spin() {
+    const shuffledNames = shuffle(flatmates);
+    const shuffledChores = shuffle(chores);
+
+    populateReel(nameReel, shuffledNames, nameColors);
+    populateReel(choreReel, shuffledChores, choreColors);
+
+    const nameIndex = Math.floor(Math.random() * flatmates.length);
+    const choreIndex = Math.floor(Math.random() * chores.length);
+
+    const nameOffset = (TOTAL_ITEMS - VISIBLE_ITEMS) * ITEM_HEIGHT - (ITEM_HEIGHT * nameIndex);
+    const choreOffset = (TOTAL_ITEMS - VISIBLE_ITEMS) * ITEM_HEIGHT - (ITEM_HEIGHT * choreIndex);
+
+    nameReel.style.transition = "none";
+    choreReel.style.transition = "none";
+    nameReel.style.transform = "translateY(0)";
+    choreReel.style.transform = "translateY(0)";
+    void nameReel.offsetWidth;
+
+    nameReel.style.transition = "transform 3.5s cubic-bezier(0.3, 1, 0.4, 1)";
+    choreReel.style.transition = "transform 3.5s cubic-bezier(0.3, 1, 0.4, 1)";
+    nameReel.style.transform = `translateY(-${nameOffset}px)`;
+    choreReel.style.transform = `translateY(-${choreOffset}px)`;
+
+    setTimeout(() => {
+      const assignments = shuffledNames.map((name, i) => {
+        const chore = shuffledChores[i % shuffledChores.length];
+        return { name, chore };
+      });
+
+      resultsList.innerHTML = '';
+      assignments.forEach(({ name, chore }) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <span style="background:${nameColors[name]}; color:white; padding:2px 6px; border-radius:4px;">${name}</span>
+           → 
+          <span style="background:${choreColors[chore]}; color:white; padding:2px 6px; border-radius:4px;">${chore}</span>
+        `;
+        resultsList.appendChild(li);
+      });
+
+      // 🎉 Confetti!
+      confetti({
+        particleCount: 150,
+        spread: 80,
+        origin: { y: 0.6 }
+      });
+
+    }, 3600);
+  }
+
+  // Initialize wheels
+  populateReel(nameReel, flatmates, nameColors);
+  populateReel(choreReel, chores, choreColors);
+</script>
+
+
+
+</body>
+
+</html>
