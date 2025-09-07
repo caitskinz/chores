@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <title>Da Chore Wheel</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-                body {
+  <meta charset="UTF-8">
+  <title>Da Chore Wheel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
       font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
       background: #78cdf5;
       color: #fff;
@@ -19,6 +18,14 @@
       margin-bottom: 25px;
       font-size: 2em;
       color: black;
+    }
+
+    .main {
+      max-width: 500px;
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 20px;
+      margin: auto;
     }
 
     .machine-container {
@@ -43,7 +50,10 @@
     .reel {
       position: absolute;
       width: 100%;
+      top: 0;
+      left: 0;
       animation-timing-function: ease-out;
+      will-change: transform;
     }
 
     .item {
@@ -68,7 +78,7 @@
 
     button:hover {
       background: #e60ba4;
-      transform: scale(1.1)
+      transform: scale(1.1);
     }
 
     .results {
@@ -84,7 +94,6 @@
     .results h2 {
       margin-bottom: 10px;
       font-size: 1.2em;
-
       padding-bottom: 5px;
     }
 
@@ -122,151 +131,147 @@
         align-items: center;
       }
     }
-
-    .main {
-        max-width: 500px;
-        background-color: #ffffff;
-        border-radius: 10px;
-        padding: 20px;
-        margin: auto;
-    }
-</style>
+  </style>
 </head>
-
 <body>
-    <div class="main">
+  <div class="main">
     <h1>🪣 🧽 Standen Chores 🧽 🪣</h1>
 
     <div class="machine-container">
-        <div class="wheel" id="nameWheel">
-            <div class="reel" id="nameReel"></div>
-        </div>
-        <div class="wheel" id="choreWheel">
-            <div class="reel" id="choreReel"></div>
-        </div>
+      <div class="wheel" id="nameWheel">
+        <div class="reel" id="nameReel"></div>
+      </div>
+      <div class="wheel" id="choreWheel">
+        <div class="reel" id="choreReel"></div>
+      </div>
     </div>
 
     <button onclick="spin()">Spin!</button>
 
     <div class="results" id="results">
-        <h2>Results</h2>
-        <ul id="resultsList"></ul>
+      <h2>Results</h2>
+      <ul id="resultsList"></ul>
     </div>
-    </div>
+  </div>
 
-    <!-- 🎉 Confetti Library -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- 🎉 Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-    <script>
-  const flatmates = ["Hannah", "Grace", "Caitlin"];
-  const chores = ["Kitchen", "Vacuuming", "Bathroom"];
+  <script>
+    const flatmates = ["Hannah", "Grace", "Caitlin"];
+    const chores = ["Kitchen", "Vacuuming", "Bathroom"];
 
-  // 🎨 Background color maps
-  const nameColors = {
-    "Hannah": "#b978fa",    
-    "Grace": "#e60ba4",      
-    "Caitlin": "#8095e4"  
-  };
+    // 🎨 Background color maps
+    const nameColors = {
+      "Hannah": "#b978fa",
+      "Grace": "#e60ba4",
+      "Caitlin": "#8095e4"
+    };
 
-  const choreColors = {
-    "Kitchen": "#b978fa",   
-    "Vacuuming": "#e60ba4", 
-    "Bathroom": "#8095e4"     
-  };
+    const choreColors = {
+      "Kitchen": "#b978fa",
+      "Vacuuming": "#e60ba4",
+      "Bathroom": "#8095e4"
+    };
 
-  const nameReel = document.getElementById("nameReel");
-  const choreReel = document.getElementById("choreReel");
-  const resultsList = document.getElementById("resultsList");
+    const nameReel = document.getElementById("nameReel");
+    const choreReel = document.getElementById("choreReel");
+    const resultsList = document.getElementById("resultsList");
 
-  const ITEM_HEIGHT = 50;
-  const VISIBLE_ITEMS = 3;
-  const TOTAL_ITEMS = 50;
+    const TOTAL_ITEMS = 50;
 
-  function populateReel(reel, items, colorMap) {
-    reel.innerHTML = '';
-    for (let i = 0; i < TOTAL_ITEMS; i++) {
-      const item = document.createElement("div");
-      item.className = "item";
-      const value = items[i % items.length];
-      item.textContent = value;
-
-      // Set background color instead of text color
-      if (colorMap[value]) {
-        item.style.backgroundColor = colorMap[value];
-        item.style.color = "#fff";
+    function populateReel(reel, items, colorMap) {
+      reel.innerHTML = '';
+      for (let i = 0; i < TOTAL_ITEMS; i++) {
+        const item = document.createElement("div");
+        item.className = "item";
+        const value = items[i % items.length];
+        item.textContent = value;
+        if (colorMap[value]) {
+          item.style.backgroundColor = colorMap[value];
+          item.style.color = "#fff";
+        }
+        reel.appendChild(item);
       }
-
-      reel.appendChild(item);
     }
-  }
 
-  function shuffle(array) {
-    const copy = [...array];
-    for (let i = copy.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [copy[i], copy[j]] = [copy[j], copy[i]];
+    function shuffle(array) {
+      const copy = [...array];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
     }
-    return copy;
-  }
 
-  function spin() {
-    const shuffledNames = shuffle(flatmates);
-    const shuffledChores = shuffle(chores);
+    // Measure sizes dynamically for desktop & mobile
+    function getMetrics(reelEl) {
+      const wheelEl = reelEl.parentElement;
+      const firstItem = reelEl.querySelector('.item');
+      if (!firstItem) return { itemH: 0, wheelH: 0, visible: 0, totalPx: 0, maxOffset: 0 };
 
-    populateReel(nameReel, shuffledNames, nameColors);
-    populateReel(choreReel, shuffledChores, choreColors);
+      const itemH = firstItem.getBoundingClientRect().height;
+      const wheelH = wheelEl.getBoundingClientRect().height;
+      const visible = Math.max(1, Math.round(wheelH / itemH));
+      const totalPx = reelEl.children.length * itemH;
+      const maxOffset = Math.max(0, totalPx - wheelH);
+      return { itemH, wheelH, visible, totalPx, maxOffset };
+    }
 
-    const nameIndex = Math.floor(Math.random() * flatmates.length);
-    const choreIndex = Math.floor(Math.random() * chores.length);
+    function spin() {
+      const shuffledNames = shuffle(flatmates);
+      const shuffledChores = shuffle(chores);
 
-    const nameOffset = (TOTAL_ITEMS - VISIBLE_ITEMS) * ITEM_HEIGHT - (ITEM_HEIGHT * nameIndex);
-    const choreOffset = (TOTAL_ITEMS - VISIBLE_ITEMS) * ITEM_HEIGHT - (ITEM_HEIGHT * choreIndex);
+      populateReel(nameReel, shuffledNames, nameColors);
+      populateReel(choreReel, shuffledChores, choreColors);
 
-    nameReel.style.transition = "none";
-    choreReel.style.transition = "none";
-    nameReel.style.transform = "translateY(0)";
-    choreReel.style.transform = "translateY(0)";
-    void nameReel.offsetWidth;
+      const mN = getMetrics(nameReel);
+      const mC = getMetrics(choreReel);
 
-    nameReel.style.transition = "transform 3.5s cubic-bezier(0.3, 1, 0.4, 1)";
-    choreReel.style.transition = "transform 3.5s cubic-bezier(0.3, 1, 0.4, 1)";
-    nameReel.style.transform = `translateY(-${nameOffset}px)`;
-    choreReel.style.transform = `translateY(-${choreOffset}px)`;
+      const nameIndex = Math.floor(Math.random() * flatmates.length);
+      const choreIndex = Math.floor(Math.random() * chores.length);
 
-    setTimeout(() => {
-      const assignments = shuffledNames.map((name, i) => {
-        const chore = shuffledChores[i % shuffledChores.length];
-        return { name, chore };
-      });
+      const nameOffset = Math.max(0, mN.maxOffset - (nameIndex * mN.itemH));
+      const choreOffset = Math.max(0, mC.maxOffset - (choreIndex * mC.itemH));
 
-      resultsList.innerHTML = '';
-      assignments.forEach(({ name, chore }) => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <span style="background:${nameColors[name]}; color:white; padding:2px 6px; border-radius:4px;">${name}</span>
-           → 
-          <span style="background:${choreColors[chore]}; color:white; padding:2px 6px; border-radius:4px;">${chore}</span>
-        `;
-        resultsList.appendChild(li);
-      });
+      nameReel.style.transition = "none";
+      choreReel.style.transition = "none";
+      nameReel.style.transform = "translateY(0)";
+      choreReel.style.transform = "translateY(0)";
+      void nameReel.offsetWidth; // force reflow
 
-      // 🎉 Confetti!
-      confetti({
-        particleCount: 150,
-        spread: 80,
-        origin: { y: 0.6 }
-      });
+      const duration = 3500;
+      const easing = "cubic-bezier(0.3, 1, 0.4, 1)";
+      nameReel.style.transition = `transform ${duration}ms ${easing}`;
+      choreReel.style.transition = `transform ${duration}ms ${easing}`;
+      nameReel.style.transform = `translateY(-${nameOffset}px)`;
+      choreReel.style.transform = `translateY(-${choreOffset}px)`;
 
-    }, 3600);
-  }
+      setTimeout(() => {
+        const assignments = shuffledNames.map((name, i) => {
+          const chore = shuffledChores[i % shuffledChores.length];
+          return { name, chore };
+        });
 
-  // Initialize wheels
-  populateReel(nameReel, flatmates, nameColors);
-  populateReel(choreReel, chores, choreColors);
-</script>
+        resultsList.innerHTML = '';
+        assignments.forEach(({ name, chore }) => {
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <span style="background:${nameColors[name]}; color:white; padding:2px 6px; border-radius:4px;">${name}</span>
+             →
+            <span style="background:${choreColors[chore]}; color:white; padding:2px 6px; border-radius:4px;">${chore}</span>
+          `;
+          resultsList.appendChild(li);
+        });
 
+        // 🎉 Confetti!
+        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+      }, duration + 100);
+    }
 
-
+    // Init reels
+    populateReel(nameReel, flatmates, nameColors);
+    populateReel(choreReel, chores, choreColors);
+  </script>
 </body>
-
 </html>
