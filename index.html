@@ -2,276 +2,480 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Da Chore Wheel</title>
+  <title>Standen Chores</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Paytone+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --violet: #6c3fc5;
+      --lilac: #9b6edf;
+      --pink: #e040a0;
+      --hot-pink: #f0198d;
+      --periwinkle: #7b8ef7;
+      --mint: #6fe6c0;
+      --card-bg: #ffffff;
+      --border: rgba(0,0,0,0.07);
+      --text: #1a1030;
+      --muted: rgba(60,40,100,0.45);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-      background: #78cdf5;
-      color: #fff;
+      background: linear-gradient(135deg, #ffe0f7 0%, #e8d5ff 35%, #c9e8ff 70%, #d0fff3 100%);
+      background-attachment: fixed;
+    }
+
+    /* Soft ambient blobs */
+    body::before, body::after {
+      content: '';
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(70px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::before {
+      width: 420px; height: 420px;
+      background: radial-gradient(circle, rgba(224,64,160,0.22) 0%, transparent 70%);
+      top: -60px; left: -80px;
+    }
+    body::after {
+      width: 360px; height: 360px;
+      background: radial-gradient(circle, rgba(108,63,197,0.18) 0%, transparent 70%);
+      bottom: -60px; right: -60px;
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 520px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 36px 28px 32px;
+      box-shadow: 0 8px 48px rgba(108,63,197,0.13), 0 2px 12px rgba(0,0,0,0.07);
+    }
+
+    header {
+      margin-bottom: 32px;
       text-align: center;
-      padding: 30px;
-      margin: 0;
+    }
+
+    header .emoji-row {
+      font-size: 2rem;
+      letter-spacing: 4px;
+      margin-bottom: 8px;
     }
 
     h1 {
-      margin-bottom: 25px;
-      font-size: 2em;
-      color: black;
+      font-family: 'Paytone One', sans-serif;
+      font-size: 2.4em;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #3d2464 30%, var(--violet) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
     }
 
-    .main {
-      max-width: 500px;
-      background-color: #ffffff;
-      border-radius: 10px;
-      padding: 20px;
-      margin: auto;
+    h1 span {
+      background: linear-gradient(135deg, var(--pink) 0%, var(--periwinkle) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    .machine-container {
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.85em;
+      margin-top: 6px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    /* Slot machine */
+    .machine {
       display: flex;
       justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-bottom: 30px;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .machine-label {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.7em;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .wheel-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .wheel {
-      width: 140px;
-      height: 150px;
+      width: 160px;
+      height: 156px;
       overflow: hidden;
-      border: 4px solid #000000;
-      border-radius: 10px;
-      background: #000000;
+      border-radius: 18px;
       position: relative;
-      margin: 0 auto;
+      background: #f0ebff;
+      border: 1.5px solid rgba(108,63,197,0.15);
+      box-shadow:
+        0 0 0 4px rgba(108,63,197,0.08),
+        inset 0 0 20px rgba(108,63,197,0.06);
+    }
+
+    /* Top and bottom fade overlays */
+    .wheel::before, .wheel::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0;
+      height: 52px;
+      z-index: 3;
+      pointer-events: none;
+    }
+    .wheel::before {
+      top: 0;
+      background: linear-gradient(to bottom, rgba(240,235,255,0.95), transparent);
+    }
+    .wheel::after {
+      bottom: 0;
+      background: linear-gradient(to top, rgba(240,235,255,0.95), transparent);
+    }
+
+    /* Selection highlight bar */
+    .wheel-highlight {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      left: 0; right: 0;
+      height: 52px;
+      z-index: 2;
+      border-top: 1.5px solid rgba(108,63,197,0.2);
+      border-bottom: 1.5px solid rgba(108,63,197,0.2);
+      background: rgba(108,63,197,0.04);
+      pointer-events: none;
+    }
+
+    .vs-badge {
+      font-family: 'Paytone One', sans-serif;
+      font-size: 1em;
+      color: var(--muted);
+      align-self: center;
+      padding-bottom: 24px;
     }
 
     .reel {
       position: absolute;
       width: 100%;
-      top: 0;
-      left: 0;
-      animation-timing-function: ease-out;
+      top: 0; left: 0;
       will-change: transform;
     }
 
     .item {
-      height: 50px;
+      height: 52px;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 1.1em;
-      border-bottom: 1px solid #000000;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.05em;
+      font-weight: 800;
+      color: #fff;
+      gap: 6px;
     }
 
-    button {
-      padding: 14px 30px;
-      font-size: 1.1em;
-      background: #24a0ed;
-      color: white;
-      border: solid black 1px;
-      border-radius: 6px;
+    /* Spin button */
+    .btn-spin {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      font-family: 'Paytone One', sans-serif;
+      font-size: 1.15em;
+      letter-spacing: 1px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--violet) 0%, var(--pink) 100%);
+      border: none;
+      border-radius: 14px;
       cursor: pointer;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 24px rgba(224,64,160,0.35), inset 0 1px 0 rgba(255,255,255,0.2);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-spin::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .btn-spin:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(224,64,160,0.5), inset 0 1px 0 rgba(255,255,255,0.2);
+      filter: brightness(1.08);
+    }
+    .btn-spin:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 12px rgba(224,64,160,0.3);
+    }
+    .btn-spin:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
     }
 
-    button:hover {
-      background: #e60ba4;
-      transform: scale(1.1);
-    }
-
+    /* Results */
     .results {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      animation: slideUp 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .results.visible {
+      display: flex;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .results-title {
+      font-family: 'Paytone One', sans-serif;
+      font-size: 0.8em;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
       text-align: center;
-      max-width: 400px;
-      margin: 20px auto;
-      background: #78cdf5;
-      padding: 1px;
-      border-radius: 10px;
-      border: solid 2px black;
+      margin-bottom: 4px;
     }
 
-    .results h2 {
-      margin-bottom: 10px;
-      font-size: 1.2em;
-      padding-bottom: 5px;
+    .result-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-radius: 14px;
+      background: #f7f2ff;
+      border: 1px solid rgba(108,63,197,0.1);
+      animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .result-card:nth-child(2) { animation-delay: 0.06s; }
+    .result-card:nth-child(3) { animation-delay: 0.12s; }
+    .result-card:nth-child(4) { animation-delay: 0.18s; }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to   { opacity: 1; transform: scale(1); }
     }
 
-    .results ul {
-      list-style: none;
-      padding: 0;
+    .result-name {
+      font-weight: 800;
+      font-size: 1.05em;
+      color: var(--text);
     }
 
-    .results li {
-      padding: 6px 0;
+    .result-arrow {
+      color: var(--muted);
+      font-size: 1em;
     }
 
-    @media (max-width: 500px) {
-      .wheel {
-        width: 100px;
-        height: 120px;
-      }
+    .result-chore {
+      font-weight: 700;
+      font-size: 0.95em;
+      padding: 5px 12px;
+      border-radius: 20px;
+      color: #fff;
+    }
 
-      .item {
-        font-size: 1em;
-        height: 40px;
-      }
+    .divider {
+      height: 1px;
+      background: rgba(255,255,255,0.08);
+      margin: 4px 0;
+    }
 
-      button {
-        width: 90%;
-        font-size: 1em;
-      }
-
-      h1 {
-        font-size: 1.5em;
-      }
-
-      .machine-container {
-        flex-direction: column;
-        align-items: center;
-      }
+    @media (max-width: 480px) {
+      .card { padding: 24px 16px 24px; }
+      h1 { font-size: 2em; }
+      .wheel { width: 130px; height: 130px; }
+      .item { height: 43px; font-size: 0.95em; }
+      .wheel::before, .wheel::after { height: 43px; }
+      .wheel-highlight { height: 43px; }
     }
   </style>
 </head>
 <body>
-  <div class="main">
-    <h1>🧽 Standen Chores 🧽</h1>
 
-    <div class="machine-container">
+<div class="card">
+  <header>
+    <div class="emoji-row">🧹✨🧴</div>
+    <h1>Standen <span>Chores</span></h1>
+  </header>
+
+  <div class="machine">
+    <div class="wheel-wrapper">
+      <div class="machine-label">Person</div>
       <div class="wheel" id="nameWheel">
+        <div class="wheel-highlight"></div>
         <div class="reel" id="nameReel"></div>
       </div>
+    </div>
+
+    <div class="vs-badge">→</div>
+
+    <div class="wheel-wrapper">
+      <div class="machine-label">Chore</div>
       <div class="wheel" id="choreWheel">
+        <div class="wheel-highlight"></div>
         <div class="reel" id="choreReel"></div>
       </div>
     </div>
-
-    <button onclick="spin()">Spin!</button>
-
-    <div class="results" id="results">
-      <h2>Results</h2>
-      <ul id="resultsList"></ul>
-    </div>
   </div>
 
-  <!-- 🎉 Confetti Library -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <button class="btn-spin" id="spinBtn" onclick="spin()">🎰 Spin!</button>
 
-  <script>
-    const flatmates = ["Hannah", "Grace", "Caitlin"];
-    const chores = ["Kitchen", "Vacuuming", "Bathroom"];
+  <div class="results" id="results">
+    <div class="results-title">This Week's Assignments</div>
+    <ul id="resultsList" style="list-style:none; display:flex; flex-direction:column; gap:10px;"></ul>
+  </div>
+</div>
 
-    // 🎨 Background color maps
-    const nameColors = {
-      "Hannah": "#b978fa",
-      "Grace": "#e60ba4",
-      "Caitlin": "#8095e4"
-    };
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-    const choreColors = {
-      "Kitchen": "#b978fa",
-      "Vacuuming": "#e60ba4",
-      "Bathroom": "#8095e4"
-    };
+<script>
+  const flatmates = ["Hannah", "Grace", "Caitlin"];
+  const chores    = ["Kitchen", "Vacuuming", "Bathroom"];
 
-    const nameReel = document.getElementById("nameReel");
-    const choreReel = document.getElementById("choreReel");
-    const resultsList = document.getElementById("resultsList");
+  const nameEmoji  = { Hannah: "👩🏻", Grace: "👩🏻‍🦰", Caitlin: "👩🏻" };
+  const choreEmoji = { Kitchen: "🍳", Vacuuming: "🌀", Bathroom: "🚿" };
 
-    const TOTAL_ITEMS = 50;
+  // Cohesive palette — each chore/name gets a gradient pill
+  const chorePalette = {
+    Kitchen:   { bg: "linear-gradient(135deg,#6c3fc5,#9b6edf)", text: "#fff" },
+    Vacuuming: { bg: "linear-gradient(135deg,#e040a0,#f07060)", text: "#fff" },
+    Bathroom:  { bg: "linear-gradient(135deg,#3a6ef7,#7b8ef7)", text: "#fff" },
+  };
+  // Name reels use matching accent colors
+  const namePalette = {
+    Hannah:  { bg: "#6c3fc5" },
+    Grace:   { bg: "#e040a0" },
+    Caitlin: { bg: "#3a6ef7" },
+  };
 
-    function populateReel(reel, items, colorMap) {
-      reel.innerHTML = '';
-      for (let i = 0; i < TOTAL_ITEMS; i++) {
-        const item = document.createElement("div");
-        item.className = "item";
-        const value = items[i % items.length];
-        item.textContent = value;
-        if (colorMap[value]) {
-          item.style.backgroundColor = colorMap[value];
-          item.style.color = "#fff";
-        }
-        reel.appendChild(item);
-      }
+  const nameReel   = document.getElementById("nameReel");
+  const choreReel  = document.getElementById("choreReel");
+  const resultsList = document.getElementById("resultsList");
+  const resultsDiv  = document.getElementById("results");
+  const spinBtn     = document.getElementById("spinBtn");
+
+  const TOTAL_ITEMS = 54; // multiple of 3
+
+  function populateReel(reel, items, paletteMap, emojiMap) {
+    reel.innerHTML = '';
+    for (let i = 0; i < TOTAL_ITEMS; i++) {
+      const val  = items[i % items.length];
+      const div  = document.createElement("div");
+      div.className = "item";
+      div.textContent = (emojiMap[val] || '') + ' ' + val;
+      div.style.background = paletteMap[val]?.bg || paletteMap[val] || 'transparent';
+      reel.appendChild(div);
     }
+  }
 
-    function shuffle(array) {
-      const copy = [...array];
-      for (let i = copy.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
-      }
-      return copy;
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
     }
+    return a;
+  }
 
-    // Measure sizes dynamically for desktop & mobile
-    function getMetrics(reelEl) {
-      const wheelEl = reelEl.parentElement;
-      const firstItem = reelEl.querySelector('.item');
-      if (!firstItem) return { itemH: 0, wheelH: 0, visible: 0, totalPx: 0, maxOffset: 0 };
+  function getItemHeight(reel) {
+    const first = reel.querySelector('.item');
+    return first ? first.getBoundingClientRect().height : 52;
+  }
 
-      const itemH = firstItem.getBoundingClientRect().height;
-      const wheelH = wheelEl.getBoundingClientRect().height;
-      const visible = Math.max(1, Math.round(wheelH / itemH));
-      const totalPx = reelEl.children.length * itemH;
-      const maxOffset = Math.max(0, totalPx - wheelH);
-      return { itemH, wheelH, visible, totalPx, maxOffset };
-    }
+  function getWheelHeight(reel) {
+    return reel.parentElement.getBoundingClientRect().height;
+  }
 
-    function spin() {
-      const shuffledNames = shuffle(flatmates);
-      const shuffledChores = shuffle(chores);
+  function spin() {
+    const shuffledNames  = shuffle(flatmates);
+    const shuffledChores = shuffle(chores);
 
-      populateReel(nameReel, shuffledNames, nameColors);
-      populateReel(choreReel, shuffledChores, choreColors);
+    // Pair each name to a chore (all assigned uniquely since lengths match)
+    const assignments = shuffledNames.map((name, i) => ({
+      name,
+      chore: shuffledChores[i % shuffledChores.length]
+    }));
 
-      const mN = getMetrics(nameReel);
-      const mC = getMetrics(choreReel);
+    populateReel(nameReel,  shuffledNames,  namePalette,  nameEmoji);
+    populateReel(choreReel, shuffledChores, chorePalette, choreEmoji);
 
-      const nameIndex = Math.floor(Math.random() * flatmates.length);
-      const choreIndex = Math.floor(Math.random() * chores.length);
+    const itemH   = getItemHeight(nameReel);
+    const wheelH  = getWheelHeight(nameReel);
+    const midRow  = Math.floor(wheelH / itemH / 2); // center visible slot index
 
-      const nameOffset = Math.max(0, mN.maxOffset - (nameIndex * mN.itemH));
-      const choreOffset = Math.max(0, mC.maxOffset - (choreIndex * mC.itemH));
+    // We want to land on the LAST occurrence of index 0 item, minus the center offset
+    const targetRow   = TOTAL_ITEMS - flatmates.length + 0; // land on first shuffled item
+    const nameOffset  = Math.max(0, (targetRow - midRow) * itemH);
+    const choreOffset = Math.max(0, (targetRow - midRow) * itemH);
 
-      nameReel.style.transition = "none";
-      choreReel.style.transition = "none";
-      nameReel.style.transform = "translateY(0)";
-      choreReel.style.transform = "translateY(0)";
-      void nameReel.offsetWidth; // force reflow
+    nameReel.style.transition  = 'none';
+    choreReel.style.transition = 'none';
+    nameReel.style.transform   = 'translateY(0)';
+    choreReel.style.transform  = 'translateY(0)';
+    void nameReel.offsetWidth;
 
-      const duration = 3500;
-      const easing = "cubic-bezier(0.3, 1, 0.4, 1)";
-      nameReel.style.transition = `transform ${duration}ms ${easing}`;
-      choreReel.style.transition = `transform ${duration}ms ${easing}`;
-      nameReel.style.transform = `translateY(-${nameOffset}px)`;
-      choreReel.style.transform = `translateY(-${choreOffset}px)`;
+    spinBtn.disabled = true;
+    spinBtn.textContent = '🎲 Spinning…';
+    resultsDiv.classList.remove('visible');
 
-      setTimeout(() => {
-        const assignments = shuffledNames.map((name, i) => {
-          const chore = shuffledChores[i % shuffledChores.length];
-          return { name, chore };
-        });
+    const duration = 3600;
+    const easing   = "cubic-bezier(0.25, 1, 0.35, 1)";
+    nameReel.style.transition  = `transform ${duration}ms ${easing}`;
+    choreReel.style.transition = `transform ${duration}ms ${easing}`;
+    nameReel.style.transform   = `translateY(-${nameOffset}px)`;
+    choreReel.style.transform  = `translateY(-${choreOffset}px)`;
 
-        resultsList.innerHTML = '';
-        assignments.forEach(({ name, chore }) => {
-          const li = document.createElement('li');
-          li.innerHTML = `
-            <span style="background:${choreColors[chore]}; color:white; padding:2px 6px; border-radius:4px;">${name}</span>
-             →
-            <span style="background:${choreColors[chore]}; color:white; padding:2px 6px; border-radius:4px;">${chore}</span>
-          `;
-          resultsList.appendChild(li);
-        });
+    setTimeout(() => {
+      resultsList.innerHTML = '';
 
-        // 🎉 Confetti!
-        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
-      }, duration + 100);
-    }
+      assignments.forEach(({ name, chore }) => {
+        const palette = chorePalette[chore];
+        const li = document.createElement('li');
+        li.className = 'result-card';
+        li.innerHTML = `
+          <span class="result-name">${nameEmoji[name] || ''} ${name}</span>
+          <span class="result-arrow">→</span>
+          <span class="result-chore" style="background:${palette.bg};">${choreEmoji[chore] || ''} ${chore}</span>
+        `;
+        resultsList.appendChild(li);
+      });
 
-    // Init reels
-    populateReel(nameReel, flatmates, nameColors);
-    populateReel(choreReel, chores, choreColors);
-  </script>
+      resultsDiv.classList.add('visible');
+
+      confetti({ particleCount: 180, spread: 90, origin: { y: 0.55 }, colors: ['#9b6edf','#e040a0','#7b8ef7','#6fe6c0'] });
+
+      spinBtn.disabled = false;
+      spinBtn.textContent = '🎰 Spin Again!';
+    }, duration + 100);
+  }
+
+  // Init
+  populateReel(nameReel,  flatmates, namePalette,  nameEmoji);
+  populateReel(choreReel, chores,    chorePalette, choreEmoji);
+</script>
 </body>
 </html>
